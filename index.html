@@ -115,7 +115,6 @@
     .cw-input.prefilled { background-color: rgba(141, 110, 99, 0.15); color: #8d6e63; }
 
     .love-result-box { display: flex; gap: 15px; }
-    /* input 태그 대신 div로 렌더링 한계 극복 */
     .love-input { width: 50px; height: 50px; border-bottom: 3px solid #bf360c; background: transparent; text-align: center; font-size: 30px; font-weight: bold; color: #bf360c; font-family: 'Courier New', monospace; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
 
     .shadow-wall { width: 320px; height: 140px; border-radius: 10px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; background-color: #fff9c4; box-shadow: 0 0 20px rgba(255, 235, 59, 0.2); position: relative; }
@@ -129,9 +128,7 @@
     .mark-s { bottom: 10px; left: 50%; transform: translateX(-50%); }
     .mark-e { right: 12px; top: 50%; transform: translateY(-50%); }
     .mark-w { left: 12px; top: 50%; transform: translateY(-50%); }
-    /* 캡처 이슈 방지를 위해 clip-path 대신 wrapper 설정 */
     .compass-needle-fixed { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; display: flex; align-items: center; justify-content: center; }
-    
     .lubber-line { position: absolute; width: 3px; height: 22px; background: #bf360c; }
     .lubber-line::before { content: '▲'; position: absolute; top: 16px; left: 50%; transform: translateX(-50%); font-size: 18px; color: #bf360c; }
 
@@ -151,25 +148,25 @@
     .mark-6 { bottom: 6px; left: 50%; transform: translateX(-50%); }
     .mark-9 { top: 50%; left: 8px; transform: translateY(-50%); }
 
-    /* z-index 충돌 방지를 위해 isolation 추가 */
+    /* 벨벳 상자 z-index 최적화 */
     .velvet-box-new { background-image: linear-gradient(#050505, #000000); background-size: 290px 24px; background-position: center; background-repeat: no-repeat; padding: 40px 25px 55px 25px; text-align: center; width: 310px; position: relative; z-index: 1; isolation: isolate; margin: 0 auto; }
     .velvet-box-new::before, .velvet-box-new::after { content: ''; position: absolute; left: 0; width: 100%; height: calc(50% - 5px); background: radial-gradient(circle at center, #2c3e50 0%, #1f2937 40%, #111827 80%, #030712 100%); border: 2px solid #0f172a; z-index: -1; }
     .velvet-box-new::before { top: 0; border-radius: 14px 14px 5px 5px; }
     .velvet-box-new::after { bottom: 0; border-radius: 6px 6px 15px 15px; }
     .gold-foil-text { font-family: 'Courier New', monospace; font-size: 24px; font-weight: bold; color: #d4af37; margin-bottom: 30px; }
-    .flat-brass-panel { background: #1a110d; padding: 5px; border-radius: 8px; display: inline-block; border: 1px solid #000; }
-    .brass-dial-group { display: flex; gap: 3px; background: #2e1d16; padding: 6px; }
-    .brass-dial-column { display: flex; flex-direction: column; align-items: center; padding: 0 6px; border-right: 1px solid rgba(0,0,0,0.6); }
+    
+    /* 10번 퍼즐 오류 해결을 위한 강제 z-index 및 렌더링 최적화 */
+    .flat-brass-panel { position: relative; z-index: 20; background: #1a110d; padding: 5px; border-radius: 8px; display: inline-block; border: 1px solid #000; }
+    .brass-dial-group { position: relative; z-index: 21; display: flex; gap: 3px; background: #2e1d16; padding: 6px; border-radius: 4px; }
+    .brass-dial-column { position: relative; z-index: 22; display: flex; align-items: center; justify-content: center; width: 45px; height: 50px; border-right: 1px solid rgba(0,0,0,0.6); }
     .brass-dial-column:last-child { border-right: none; }
-    .brass-dial-value { font-family: 'Courier New', monospace; font-size: 30px; font-weight: bold; color: #f8e5a2; margin: 6px 0; }
+    .brass-dial-value { position: relative; z-index: 99; font-family: 'Courier New', monospace; font-size: 30px; font-weight: bold; color: #f8e5a2; line-height: 1; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
 
-    /* 보석 세공 CSS - 가짜 가상요소 제거 후 투명 컨테이너로 변경 */
     .gem-board { display: grid; grid-template-columns: 1fr 1fr; gap: 35px; padding: 35px; background: radial-gradient(circle at center, #3e2723 0%, #1e110d 100%); border-radius: 24px; }
     .gem-btn { width: 85px; height: 60px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; padding: 0; outline: none; }
     
     .address-note { background: #fdfbf7; border: 1px solid #d7ccc8; padding: 20px; border-radius: 6px; font-size: 18px; text-align: center; }
     .postal-group { display: flex; gap: 10px; margin: 15px 0; justify-content: center; }
-    /* 우편번호 입력창 렌더링 한계 극복을 위해 div+flex 적용 */
     .postal-input { width: 45px; height: 55px; font-size: 24px; text-align: center; border: 2px solid #a1887f; border-radius: 8px; font-weight: bold; font-family: 'Courier New', monospace; background: #fff; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
   </style>
 </head>
@@ -427,14 +424,13 @@
         explanation: "가장 무거운 닻(로잔나)을 지키는 파도(마야)를 의미하는 영단어 'WAVE'를 황동 자물쇠 다이얼을 돌려 입력합니다.",
         html: `
           <div class="velvet-box-new">
-            <!-- 내부 콘텐츠를 묶어 z-index 우선순위 보장 -->
             <div style="position: relative; z-index: 10;">
               <div class="gold-foil-text">ANCHOR AND</div>
               <div class="flat-brass-panel">
                 <div class="brass-dial-group">
                   ${['W', 'A', 'V', 'E'].map(c => `
                     <div class="brass-dial-column">
-                      <div class="brass-dial-value">${c}</div>
+                      <span class="brass-dial-value">${c}</span>
                     </div>
                   `).join('')}
                 </div>
@@ -449,7 +445,6 @@
         explanation: "세공 시작을 누르면 4개의 보석 중 일부가 차례로 반짝입니다. 반짝인 순서를 정확히 기억해 똑같은 순서대로 보석을 클릭해야 합니다. 실수를 방지하며 총 3번의 라운드를 연속으로 통과해야 합니다.",
         html: `
           <div class="gem-board" style="transform: scale(0.9); margin-top: -10px;">
-            <!-- CSS clip-path 대신 SVG 벡터 이미지로 커팅 형태 강제 고정 -->
             <div class="gem-btn">
               <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
                 <polygon points="20,0 80,0 100,30 50,100 0,30" fill="#3a7ca5"/>
@@ -489,7 +484,6 @@
           <div class="address-note">
             <div style="font-weight: bold; margin-bottom: 15px; font-size: 20px;">Porto Flavia</div>
             <div class="postal-group">
-              <!-- input 태그 대신 div 적용 (렌더링 안정성) -->
               <div class="postal-input">0</div>
               <div class="postal-input">9</div>
               <div class="postal-input">0</div>
