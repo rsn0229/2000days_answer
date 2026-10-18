@@ -333,7 +333,7 @@
       {
         title: "2. 기사단 입단식",
         question: "사관학교를 무사히 졸업하고 파도 기사단에 정식으로 발을 들이는 것을 보니 감회가 새롭구나.\n\n기사단에 몸담는다는 건 네 짐작보다 훨씬 무겁고 험난한 일일 테지. 하지만 스스로 맹세한 길이니, 거침없이 나아가 사르디나의 가장 무거운 닻을 지키는 파도가 되길 바란다.",
-        explanation: "편지 본문에서 마력이 담긴 푸른색 글자를 색이 옅은 하늘색부터 가장 짙은 남색 순서(파-도-의-기-사)대로 조합해 입력합니다.",
+        explanation: "편지 본문에서 푸른색 글자를 색이 옅은 하늘색부터 가장 짙은 남색 순서(파-도-의-기-사)대로 조합해 입력합니다.",
         html: `
           <div class="magic-slot-group">
             <div class="magic-slot">파</div>
@@ -348,7 +348,7 @@
       {
         title: "3. 장마철의 악몽",
         question: "뒤섞인 서류 복구하기\n(월별 교역량 추이 분석)",
-        explanation: "조각난 9개의 서류를 클릭하여 서로의 위치를 맞바꾸는 직소 퍼즐입니다. 서류 상단에 큰 글씨(제목)가 오고 하단에 꺾은선 그래프가 오도록 이미지를 완성하면 됩니다.",
+        explanation: "조각난 9개의 서류를 클릭하여 서로의 위치를 맞바꾸는 퍼즐입니다. 서류 상단에 큰 글씨(제목)가 오고 하단에 꺾은선 그래프가 오도록 이미지를 완성하면 됩니다.",
         html: `
           <div class="jigsaw-board">
             ${[...Array(9)].map((_, i) => {
@@ -366,7 +366,7 @@
       {
         title: "4. 스며든 시간 속 애정",
         question: "십자말풀이를 완성하세요.",
-        explanation: "크로스워드의 가로/세로 단어 정답(BLUE, WAVE, OCEAN, SEA)을 올바르게 채우면 동그라미 쳐진 알파벳들이 순서대로 'L, O, V, E'가 됩니다.",
+        explanation: "크로스워드의 가로/세로 단어 정답(BLUE, WAVE, OCEAN, SEA)을 채우면 동그라미 쳐진 알파벳들이 순서대로 'L, O, V, E'가 됩니다.",
         html: `
           <div class="crossword-container" style="display: flex; flex-direction: column; align-items: center;">
             <div class="crossword-board" style="display: grid; grid-template-columns: repeat(6, 40px); grid-template-rows: repeat(5, 40px);">
@@ -483,13 +483,13 @@
       {
         title: "9. 축제의 밤",
         question: "인파를 벗어날 길을 연결해 보자.",
-        explanation: "무작위로 뒤섞인 조각들을 클릭해 90도씩 회전시켜, 왼쪽 위(입구)부터 오른쪽 아래(출구)까지 끊어지지 않게 올바른 길을 완성합니다.",
+        explanation: "무작위로 뒤섞인 조각들을 클릭해 90도씩 회전시켜, 왼쪽 위(입구)부터 오른쪽 아래(출구)까지 끊어지지 않도록 길을 완성합니다.",
         html: pipelineFinalHtml 
       },
       {
         title: "10. 영원을 약속하며",
         question: "사르디나의 가장 무거운 닻과,\n그 닻을 지키는 파도.\n(ANCHOR AND W _ _ _)",
-        explanation: "가장 무거운 닻(로잔나)을 지키는 파도(마야)를 의미하는 영단어 'WAVE'를 황동 자물쇠 다이얼을 돌려 입력합니다.",
+        explanation: "다이얼을 돌려, 가장 무거운 닻(로잔나)을 지키는 파도(마야)를 의미하는 단어 'WAVE'를 완성합니다.",
         html: `
           <div class="velvet-box-new">
             <div class="gold-foil-text">ANCHOR AND</div>
