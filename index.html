@@ -3,194 +3,213 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>닻과 파도의 항해일지 - 해설지</title>
+  <title>닻과 파도의 항해일지 - 해설지 (흑백 만화 에디션)</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
-    /* 전체 배경 */
     body {
       margin: 0; padding: 0;
-      background-color: #f5f5f5;
+      background-color: #e5e5e5;
       font-family: 'Gowun Dodum', 'Noto Color Emoji', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      color: #3e2723;
+      color: #1a1a1a;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* 인쇄용 여백 래퍼 */
+    #viewport-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      overflow-x: auto;
+      padding: 20px 0;
+    }
+
+/* [수정] 인쇄용 여백 래퍼 크기 확대 */
     #print-wrapper {
       background-color: #ffffff;
-      padding: 100px;
+      width: 950px;
+      height: 1420px; /* 세로 여백 확장에 맞춰 높이를 1420px로 상향 조정 */
+      padding: 87px;
       display: flex;
       justify-content: center;
       align-items: center;
       box-sizing: border-box;
+      flex-shrink: 0;
     }
 
-    /* A5 사이즈 해설지 컨테이너 */
+/* [수정] 해설지 컨테이너 (위아래 1.7배 = 102px, 양옆 1.3배 = 78px 로 여백 확대) */
     .a5-paper {
       position: relative;
       width: 724px;
-      height: 1024px;
-      padding: 60px;
-      background-color: #f2eee5;
-      background-image: 
-        linear-gradient(to right, transparent 0%, rgba(0,0,0,0.06) 49.5%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 51%, transparent 100%),
-        linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.06) 49.5%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 51%, transparent 100%),
-        repeating-linear-gradient(45deg, rgba(161, 136, 127, 0.03) 0px, rgba(161, 136, 127, 0.03) 1px, transparent 1px, transparent 3px),
-        radial-gradient(circle at center, transparent 40%, rgba(62, 39, 35, 0.1) 100%);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-      border-radius: 5px 255px 3px 25px / 255px 5px 225px 5px;
+      height: 1155px;
+      padding: 102px 78px; /* 위아래 여백을 102px로 넓혀 본문 영역을 더 아담하게 조정 */
+      background-color: #ffffff;
+      border: 3px solid #1a1a1a;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       box-sizing: border-box;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     .tt-title {
-      font-size: 32px; font-weight: bold; color: #3e2723;
-      border-bottom: 3px solid rgba(62, 39, 35, 0.2);
+      font-size: 32px; font-weight: bold; color: #1a1a1a;
+      border-bottom: 3px solid #1a1a1a;
       padding-bottom: 12px; margin-bottom: 40px; text-align: center; width: 100%;
     }
 
     .question-box {
       width: 70%;
-      background-color: #ffffff; padding: 25px; border-radius: 8px;
-      font-size: 18px; color: #3e2723; line-height: 1.6; text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+      background-color: #ffffff; padding: 25px; border-radius: 4px;
+      font-size: 21px; color: #1a1a1a; line-height: 1.6; text-align: center;
+      box-shadow: 0 4px 0px #1a1a1a; 
       margin-bottom: 30px; 
-      word-break: keep-all; border: 1px solid #d7ccc8;
+      word-break: keep-all; border: 2px solid #1a1a1a;
     }
 
     .explanation {
-      margin-top: auto; width: 100%; background: rgba(255, 255, 255, 0.7);
-      border: 2px dashed #a1887f; border-radius: 12px; padding: 25px;
-      font-size: 18px; line-height: 1.6; color: #5d4037; box-sizing: border-box; word-break: keep-all;
+      margin-top: auto; width: 100%; background: #f8f8f8;
+      border: 2px solid #1a1a1a; border-radius: 8px; padding: 25px;
+      font-size: 21px; line-height: 1.6; color: #222222; box-sizing: border-box; word-break: keep-all;
     }
 
     .puzzle-view {
       width: 100%; display: flex; flex-direction: column; align-items: center;
       pointer-events: none; transform: scale(1.2); 
-      margin-top: 50px; 
+      margin-top: 65px; 
       margin-bottom: 40px;
     }
 
-    .controls { display: flex; gap: 15px; margin-top: 30px; margin-bottom: 30px; }
-    .custom-btn {
-      padding: 12px 24px; background-color: #fffaf0; border: 1px solid #d7ccc8;
-      border-radius: 4px; color: #5d4037; font-family: inherit; font-size: 16px;
-      font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.08); transition: all 0.2s;
+    .controls {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 12px; margin-top: 20px; margin-bottom: 40px; padding: 0 15px;
     }
-    .custom-btn:hover { background-color: #efebe9; transform: translateY(-1px); }
+    .custom-btn {
+      padding: 12px 20px; background-color: #ffffff; border: 2px solid #1a1a1a;
+      border-radius: 6px; color: #1a1a1a; font-family: inherit; font-size: 15px;
+      font-weight: bold; cursor: pointer; box-shadow: 0 3px 0 #1a1a1a; transition: all 0.1s;
+    }
+    .custom-btn:hover:not(:disabled) { background-color: #f0f0f0; transform: translateY(-1px); }
+    .custom-btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #1a1a1a; }
+    .custom-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-pdf-single { background-color: #e0e0e0; }
+    .btn-pdf-all { background-color: #1a1a1a; color: #ffffff; }
 
-    /* =========================================
-       퍼즐 UI 공통 CSS
-       ========================================= */
-    .dial-lock-container { display: flex; gap: 8px; padding: 20px; background: #2e1d16; border-radius: 12px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); }
-    .dial-digit { background: linear-gradient(to bottom, #7d5e1b, #a67c00, #f8e5a2, #a67c00, #7d5e1b); border-radius: 6px; padding: 6px; text-align: center; }
-    .dial-value { font-size: 34px; font-weight: bold; font-family: 'Courier New', monospace; color: #2e1d16; text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3); width: 45px; margin: 12px 0; }
+    .dial-lock-container { display: flex; gap: 8px; padding: 20px; background: #ffffff; border: 3px solid #1a1a1a; border-radius: 8px; box-shadow: 4px 4px 0 #1a1a1a; }
+    .dial-digit { background: #f0f0f0; border: 2px solid #1a1a1a; border-radius: 4px; padding: 6px; text-align: center; }
+    .dial-value { font-size: 34px; font-weight: bold; font-family: 'Courier New', monospace; color: #1a1a1a; width: 45px; margin: 12px 0; }
     
     .symbol-lock-container { display: flex; gap: 20px; }
-    .symbol-btn { width: 70px; height: 70px; font-size: 36px; background: #fdfbf7; border: 2px solid #a1887f; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+/* [수정 후] 흑백 필터와 대비(contrast) 효과 추가 */
+    .symbol-btn { 
+      width: 70px; 
+      height: 70px; 
+      font-size: 36px; 
+      background: #ffffff; 
+      border: 2px solid #1a1a1a; 
+      border-radius: 8px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      box-shadow: 3px 3px 0 #1a1a1a; 
+      /* 컬러 이모지를 흑백 만화 톤으로 변환하는 필터 */
+      filter: grayscale(100%) contrast(1.3); 
+    }
 
     .magic-slot-group { display: flex; gap: 8px; }
-    .magic-slot { width: 40px; height: 50px; text-align: center; line-height: 50px; font-size: 26px; font-weight: bold; color: #3e2723; border-bottom: 3px solid #bf360c; }
+    .magic-slot { width: 40px; height: 50px; text-align: center; line-height: 50px; font-size: 26px; font-weight: bold; color: #1a1a1a; border-bottom: 3px solid #1a1a1a; border-top: 1px solid #ccc; background: #fafafa; }
     .magic-space { width: 20px; }
 
-    .jigsaw-board { display: inline-grid; grid-template-columns: repeat(3, 75px); grid-template-rows: repeat(3, 75px); gap: 2px; background-color: #a1887f; border: 4px solid #8d6e63; padding: 3px; }
-    .jigsaw-piece { width: 75px; height: 75px; background-image: url('clue_paper.png'); background-size: 225px 225px; }
+    .jigsaw-board { display: inline-grid; grid-template-columns: repeat(3, 75px); grid-template-rows: repeat(3, 75px); gap: 2px; background-color: #1a1a1a; border: 3px solid #1a1a1a; padding: 2px; }
+    .jigsaw-piece { position: relative; width: 75px; height: 75px; overflow: hidden; background-color: #ffffff; }
+    .jigsaw-piece img { position: absolute; width: 225px; height: 225px; max-width: none; display: block; filter: grayscale(100%) contrast(1.2); }
 
-    .crossword-board { display: inline-grid; gap: 0; border: 2px solid #3e2723; background-color: #3e2723; padding: 2px; margin-bottom: 15px; }
+    .crossword-board { display: inline-grid; gap: 0; border: 3px solid #1a1a1a; background-color: #1a1a1a; padding: 2px; margin-bottom: 15px; }
     .cw-cell-wrapper { position: relative; width: 40px; height: 40px; background-color: #ffffff; }
     .cw-empty { background-color: transparent; }
-    .cw-input { width: 100%; height: 100%; border: 1px solid #d7ccc8; text-align: center; font-size: 20px; font-weight: bold; font-family: 'Courier New', monospace; color: #3e2723; background: transparent; box-sizing: border-box; padding: 0; display: flex; align-items: center; justify-content: center; }
-    .cw-number { position: absolute; top: 2px; left: 3px; font-size: 10px; color: #8d6e63; line-height: 1; }
-    .cw-circle::after { content: ''; position: absolute; top: 50%; left: 50%; width: 32px; height: 32px; border: 2px solid #bf360c; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
-    .cw-input.prefilled { background-color: rgba(141, 110, 99, 0.15); color: #8d6e63; }
+    .cw-input { width: 100%; height: 100%; border: 1px solid #1a1a1a; text-align: center; font-size: 20px; font-weight: bold; font-family: 'Courier New', monospace; color: #1a1a1a; background: transparent; box-sizing: border-box; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .cw-number { position: absolute; top: 2px; left: 3px; font-size: 10px; color: #555555; line-height: 1; }
+    .cw-circle::after { content: ''; position: absolute; top: 50%; left: 50%; width: 32px; height: 32px; border: 2px solid #1a1a1a; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+    .cw-input.prefilled { background-color: #e0e0e0; color: #333333; }
 
     .love-result-box { display: flex; gap: 15px; }
-    .love-input { width: 50px; height: 50px; border-bottom: 3px solid #bf360c; background: transparent; text-align: center; font-size: 30px; font-weight: bold; color: #bf360c; font-family: 'Courier New', monospace; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+    .love-input { width: 50px; height: 50px; border-bottom: 3px solid #1a1a1a; background: transparent; text-align: center; font-size: 30px; font-weight: bold; color: #1a1a1a; font-family: 'Courier New', monospace; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
 
-    .shadow-wall { width: 320px; height: 140px; border-radius: 10px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; background-color: #fff9c4; box-shadow: 0 0 20px rgba(255, 235, 59, 0.2); position: relative; }
+    .shadow-wall { width: 320px; height: 140px; border-radius: 4px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; background-color: #ffffff; border: 2px solid #1a1a1a; box-shadow: 4px 4px 0 #1a1a1a; position: relative; }
     .candle-container { display: flex; gap: 20px; }
-    .candle-btn { width: 55px; height: 70px; background: transparent; border: none; position: relative; display: flex; align-items: flex-end; justify-content: center; font-size: 38px; }
+    .candle-btn { width: 55px; height: 70px; background: transparent; border: none; position: relative; display: flex; align-items: flex-end; justify-content: center; font-size: 38px; filter: grayscale(100%); }
     .candle-flame { position: absolute; top: -20px; font-size: 30px; opacity: 1; }
 
-    .compass-wrapper { position: relative; width: 160px; height: 160px; border: 5px solid #a1887f; border-radius: 50%; background: #fdfbf7; margin: 15px auto; }
-    .compass-mark { position: absolute; font-weight: bold; color: #8d6e63; font-size: 20px; z-index: 1; }
-    .mark-n { top: 10px; left: 50%; transform: translateX(-50%); color: #bf360c; }
+    .compass-wrapper { position: relative; width: 160px; height: 160px; border: 4px solid #1a1a1a; border-radius: 50%; background: #ffffff; margin: 15px auto; box-shadow: 3px 3px 0 #1a1a1a; }
+    .compass-mark { position: absolute; font-weight: bold; color: #1a1a1a; font-size: 20px; z-index: 1; }
+    .mark-n { top: 10px; left: 50%; transform: translateX(-50%); }
     .mark-s { bottom: 10px; left: 50%; transform: translateX(-50%); }
     .mark-e { right: 12px; top: 50%; transform: translateY(-50%); }
     .mark-w { left: 12px; top: 50%; transform: translateY(-50%); }
     .compass-needle-fixed { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 2; display: flex; align-items: center; justify-content: center; }
-    .lubber-line { position: absolute; width: 3px; height: 22px; background: #bf360c; }
-    .lubber-line::before { content: '▲'; position: absolute; top: 16px; left: 50%; transform: translateX(-50%); font-size: 18px; color: #bf360c; }
+    
+    .lubber-line { position: absolute; width: 3px; height: 22px; background: #1a1a1a; }
+    .lubber-line::before { content: '▲'; position: absolute; top: 16px; left: 50%; transform: translateX(-50%); font-size: 18px; color: #1a1a1a; }
 
-    .cocktail-glass { width: 70px; height: 150px; border: 6px solid #f0f4f5; border-top: none; border-radius: 0 0 12px 12px; background: rgba(255, 255, 255, 0.5); display: flex; flex-direction: column-reverse; overflow: hidden; }
-    .liquid-drop { width: 100%; height: 40px; }
-    .drop-base { background-color: rgba(253, 230, 143, 0.4); }
-    .drop-syrup { background-color: rgba(233, 122, 108, 0.6); }
-    .drop-soda { background-color: rgba(3, 169, 244, 0.5); }
+    .cocktail-glass { width: 70px; height: 150px; border: 4px solid #1a1a1a; border-top: none; border-radius: 0 0 10px 10px; background: #ffffff; display: flex; flex-direction: column-reverse; overflow: hidden; }
+    .liquid-drop { width: 100%; height: 40px; border-top: 1px dashed #1a1a1a; }
+    .drop-base { background-color: #dcdcdc; }
+    .drop-syrup { background-color: #a0a0a0; }
+    .drop-soda { background-color: #666666; }
 
-    .watch-face { position: relative; width: 140px; height: 140px; border: 7px solid #a1887f; border-radius: 50%; background: #fdfbf7; margin-bottom: 15px; }
-    .watch-center { position: absolute; top: 50%; left: 50%; width: 12px; height: 12px; background: #3e2723; border-radius: 50%; transform: translate(-50%, -50%); z-index: 4; }
-    .hand-hour { position: absolute; top: 50%; left: 50%; width: 7px; height: 42px; background: #5d4037; transform-origin: bottom center; margin-left: -3.5px; margin-top: -42px; z-index: 2; border-radius: 4px; }
-    .hand-minute { position: absolute; top: 50%; left: 50%; width: 5px; height: 60px; background: #bf360c; transform-origin: bottom center; margin-left: -2.5px; margin-top: -60px; z-index: 3; border-radius: 3px; }
-    .watch-mark { position: absolute; font-size: 16px; font-weight: bold; color: #8d6e63; }
+    .watch-face { position: relative; width: 140px; height: 140px; border: 4px solid #1a1a1a; border-radius: 50%; background: #ffffff; margin-bottom: 15px; box-shadow: 3px 3px 0 #1a1a1a; }
+    .watch-center { position: absolute; top: 50%; left: 50%; width: 12px; height: 12px; background: #1a1a1a; border-radius: 50%; transform: translate(-50%, -50%); z-index: 4; }
+    .hand-hour { position: absolute; top: 50%; left: 50%; width: 7px; height: 42px; background: #1a1a1a; transform-origin: bottom center; margin-left: -3.5px; margin-top: -42px; z-index: 2; border-radius: 2px; }
+    .hand-minute { position: absolute; top: 50%; left: 50%; width: 5px; height: 60px; background: #555; transform-origin: bottom center; margin-left: -2.5px; margin-top: -60px; z-index: 3; border-radius: 2px; }
+    .watch-mark { position: absolute; font-size: 16px; font-weight: bold; color: #1a1a1a; }
     .mark-12 { top: 6px; left: 50%; transform: translateX(-50%); }
     .mark-3 { top: 50%; right: 8px; transform: translateY(-50%); }
     .mark-6 { bottom: 6px; left: 50%; transform: translateX(-50%); }
     .mark-9 { top: 50%; left: 8px; transform: translateY(-50%); }
 
-    /* 벨벳 상자 z-index 최적화 */
-    .velvet-box-new { background-image: linear-gradient(#050505, #000000); background-size: 290px 24px; background-position: center; background-repeat: no-repeat; padding: 40px 25px 55px 25px; text-align: center; width: 310px; position: relative; z-index: 1; isolation: isolate; margin: 0 auto; }
-    .velvet-box-new::before, .velvet-box-new::after { content: ''; position: absolute; left: 0; width: 100%; height: calc(50% - 5px); background: radial-gradient(circle at center, #2c3e50 0%, #1f2937 40%, #111827 80%, #030712 100%); border: 2px solid #0f172a; z-index: -1; }
-    .velvet-box-new::before { top: 0; border-radius: 14px 14px 5px 5px; }
-    .velvet-box-new::after { bottom: 0; border-radius: 6px 6px 15px 15px; }
-    .gold-foil-text { font-family: 'Courier New', monospace; font-size: 24px; font-weight: bold; color: #d4af37; margin-bottom: 30px; }
-    
-    /* 10번 퍼즐 오류 해결을 위한 강제 z-index 및 렌더링 최적화 */
-    .flat-brass-panel { position: relative; z-index: 20; background: #1a110d; padding: 5px; border-radius: 8px; display: inline-block; border: 1px solid #000; }
-    .brass-dial-group { position: relative; z-index: 21; display: flex; gap: 3px; background: #2e1d16; padding: 6px; border-radius: 4px; }
-    .brass-dial-column { position: relative; z-index: 22; display: flex; align-items: center; justify-content: center; width: 45px; height: 50px; border-right: 1px solid rgba(0,0,0,0.6); }
+    .velvet-box-new { background: #ffffff; border: 3px solid #1a1a1a; padding: 40px 25px; text-align: center; width: 310px; position: relative; margin: 0 auto; box-shadow: 4px 4px 0 #1a1a1a; }
+    .gold-foil-text { font-family: 'Courier New', monospace; font-size: 24px; font-weight: bold; color: #1a1a1a; margin-bottom: 30px; letter-spacing: 2px; }
+    .flat-brass-panel { background: #ffffff; padding: 5px; border-radius: 4px; display: inline-block; border: 2px solid #1a1a1a; }
+    .brass-dial-group { display: flex; gap: 3px; background: #f0f0f0; padding: 6px; }
+    .brass-dial-column { display: flex; flex-direction: column; align-items: center; padding: 0 6px; border-right: 1px solid #1a1a1a; }
     .brass-dial-column:last-child { border-right: none; }
-    .brass-dial-value { position: relative; z-index: 99; font-family: 'Courier New', monospace; font-size: 30px; font-weight: bold; color: #f8e5a2; line-height: 1; text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }
+    .brass-dial-value { font-family: 'Courier New', monospace; font-size: 30px; font-weight: bold; color: #1a1a1a; margin: 6px 0; }
 
-    .gem-board { display: grid; grid-template-columns: 1fr 1fr; gap: 35px; padding: 35px; background: radial-gradient(circle at center, #3e2723 0%, #1e110d 100%); border-radius: 24px; }
-    .gem-btn { width: 85px; height: 60px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; padding: 0; outline: none; }
+    .gem-board { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; padding: 25px; background: #ffffff; border: 3px solid #1a1a1a; border-radius: 12px; box-shadow: 4px 4px 0 #1a1a1a; }
+    .gem-btn { width: 85px; height: 60px; display: flex; align-items: center; justify-content: center; background: #ffffff; border: 2px solid #1a1a1a; border-radius: 6px; padding: 0; outline: none; }
     
-    .address-note { background: #fdfbf7; border: 1px solid #d7ccc8; padding: 20px; border-radius: 6px; font-size: 18px; text-align: center; }
+    .address-note { background: #ffffff; border: 2px solid #1a1a1a; padding: 20px; border-radius: 6px; font-size: 18px; text-align: center; box-shadow: 3px 3px 0 #1a1a1a; }
     .postal-group { display: flex; gap: 10px; margin: 15px 0; justify-content: center; }
-    .postal-input { width: 45px; height: 55px; font-size: 24px; text-align: center; border: 2px solid #a1887f; border-radius: 8px; font-weight: bold; font-family: 'Courier New', monospace; background: #fff; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+    .postal-input { width: 45px; height: 55px; font-size: 24px; text-align: center; border: 2px solid #1a1a1a; border-radius: 6px; font-weight: bold; font-family: 'Courier New', monospace; background: #ffffff; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
   </style>
 </head>
 <body>
 
-  <!-- 인쇄용 여백을 포함하는 최상단 캡처 래퍼 -->
-  <div id="print-wrapper">
-    <!-- 실제 A5 해설지 영역 -->
-    <div class="a5-paper" id="capture-area">
-      <h2 class="tt-title" id="chapter-title">로딩 중...</h2>
-      
-      <!-- 원문 퍼즐 질문 영역 -->
-      <div class="question-box" id="question-text"></div>
-
-      <div class="puzzle-view" id="puzzle-view"></div>
-
-      <div class="explanation" id="explanation-text"></div>
+  <div id="viewport-container">
+    <div id="print-wrapper">
+      <div class="a5-paper" id="capture-area">
+        <h2 class="tt-title" id="chapter-title">로딩 중...</h2>
+        
+        <div class="question-box" id="question-text"></div>
+        <div class="puzzle-view" id="puzzle-view"></div>
+        <div class="explanation" id="explanation-text"></div>
+      </div>
     </div>
   </div>
 
-  <!-- 조작 버튼 (캡처 시 자동 제외) -->
   <div class="controls">
     <button class="custom-btn" id="prev-btn">◀ 이전 해설</button>
-    <button class="custom-btn" id="download-btn" style="background-color: #e6dfd1;">📥 고해상도 해설지 다운로드</button>
+    <button class="custom-btn btn-pdf-single" id="download-pdf-btn">📄 현재 해설 PDF (신국판 300dpi)</button>
+    <button class="custom-btn btn-pdf-all" id="download-all-pdf-btn">📚 전체(13쪽) 합본 PDF 저장</button>
+    <button class="custom-btn" id="download-png-btn">🖼️ 300dpi PNG 저장</button>
     <button class="custom-btn" id="next-btn">다음 해설 ▶</button>
   </div>
 
@@ -206,7 +225,7 @@
     let pipelineGridHtml = '';
     pipelineTiles.forEach((tile, index) => {
         const isPath = pipelinePathIndices.includes(index);
-        const color = isPath ? '#fff59d' : '#4a4a4a'; 
+        const color = isPath ? '#1a1a1a' : '#888888'; 
         let svg = '';
         if (tile.t === 'L') {
             svg = '<path d="M 50 0 L 50 50 L 100 50" fill="none" stroke="' + color + '" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>';
@@ -215,21 +234,29 @@
         } else {
             svg = '<path d="M 0 50 L 100 50 M 50 50 L 50 100" fill="none" stroke="' + color + '" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>';
         }
-        pipelineGridHtml += '<div style="width: 45px; height: 45px; background-color: #2c3e50; transform: rotate(' + tile.a + 'deg);"><svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">' + svg + '</svg></div>';
+        pipelineGridHtml += '<div style="width: 45px; height: 45px; background-color: #ffffff; border: 1px solid #1a1a1a; transform: rotate(' + tile.a + 'deg);"><svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">' + svg + '</svg></div>';
     });
 
     const pipelineFinalHtml = `
-      <div style="background: #1a1a24; padding: 25px; border-radius: 8px; color: #fff9c4; font-size: 15px; display: flex; flex-direction: column; align-items: center;">
+      <div style="background: #ffffff; border: 2px solid #1a1a1a; padding: 25px; border-radius: 4px; color: #1a1a1a; font-size: 15px; display: flex; flex-direction: column; align-items: center; box-shadow: 3px 3px 0 #1a1a1a;">
         <div style="position: relative;">
-          <div style="position: absolute; top: 6px; left: -35px; color: #e53935; font-size: 26px; font-weight: bold;">➔</div>
-          <div style="display: grid; grid-template-columns: repeat(5, 45px); grid-template-rows: repeat(5, 45px); gap: 2px; background-color: #000000; padding: 4px; border-radius: 8px; margin-bottom: 15px;">
+          <div style="position: absolute; top: 6px; left: -35px; color: #1a1a1a; font-size: 26px; font-weight: bold;">➔</div>
+          <div style="display: grid; grid-template-columns: repeat(5, 45px); grid-template-rows: repeat(5, 45px); gap: 2px; background-color: #1a1a1a; padding: 4px; border-radius: 4px; margin-bottom: 15px;">
             ${pipelineGridHtml}
           </div>
-          <div style="position: absolute; bottom: 6px; right: -35px; color: #e53935; font-size: 26px; font-weight: bold;">➔</div>
+          <div style="position: absolute; bottom: 6px; right: -35px; color: #1a1a1a; font-size: 26px; font-weight: bold;">➔</div>
         </div>
-        <span style="color: #fff59d; font-weight: bold;">[노란색 선이 완성된 올바른 길입니다]</span>
+        <span style="color: #1a1a1a; font-weight: bold;">[진한 선이 완성된 올바른 길입니다]</span>
       </div>
     `;
+
+// [수정 후] 완벽한 흑백/회색조(모노톤) 팔레트
+    const gemTones = [
+      { top: "#e8e8e8", left: "#b4b4b4", right: "#8c8c8c", center: "#d2d2d2" }, // 1번 보석 (밝은 회색톤)
+      { top: "#dcdcdc", left: "#9e9e9e", right: "#737373", center: "#bebebe" }, // 2번 보석 (중간 회색톤)
+      { top: "#cccccc", left: "#888888", right: "#5a5a5a", center: "#aaaaaa" }, // 3번 보석 (약간 어두운 회색톤)
+      { top: "#b8b8b8", left: "#707070", right: "#414141", center: "#969696" }  // 4번 보석 (진한 회색톤)
+    ];
 
     const solutionData = [
       {
@@ -282,7 +309,11 @@
             ${[...Array(9)].map((_, i) => {
               const x = (i % 3) * -75;
               const y = Math.floor(i / 3) * -75;
-              return `<div class="jigsaw-piece" style="background-position: ${x}px ${y}px"></div>`;
+              return `
+                <div class="jigsaw-piece">
+                  <img src="clue_paper.png" alt="piece-${i}" style="left: ${x}px; top:${y}px;">
+                </div>
+              `;
             }).join('')}
           </div>
         `
@@ -320,7 +351,6 @@
               <div class="cw-empty"></div>
               <div class="cw-cell-wrapper"><div class="cw-input">A</div></div>
             </div>
-            <!-- 입력창 대신 div 적용 (렌더링 안정성) -->
             <div class="love-result-box">
               <div class="love-input">L</div>
               <div class="love-input">O</div>
@@ -332,12 +362,12 @@
       },
       {
         title: "5. 한밤중의 고백",
-        question: "마음이 환하게 드러나는 순간을 찾아보자.\n(촛불을 하나 켜면 주변의 불꽃도 함께 흔들립니다.)",
+        question: "마음이 환하게 드러나는 순간을 찾아보자.\n(촛불을 하나 켜면 주변의 불꽃도\n함께 흔들립니다.)",
         explanation: "촛불을 클릭하면 양옆의 촛불 상태도 함께 켜지거나 꺼집니다. 5개의 촛불이 모두 켜지도록 규칙을 파악해 클릭하면, 방 안이 환해지며 숨겨진 하트가 나타납니다.",
         html: `
           <div class="shadow-wall">
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-              <img src="red_heart_3d.png" alt="heart" style="width: 60px; height: 60px; object-fit: contain;">
+              <img src="red_heart_3d.png" alt="heart" style="width: 60px; height: 60px; object-fit: contain; filter: grayscale(100%) contrast(2);">
             </div>
           </div>
           <div class="candle-container">
@@ -365,16 +395,9 @@
             <div class="compass-mark mark-s">S</div>
             <div class="compass-mark mark-w">W</div>
             
-            <!-- SVG를 이용해 캡처 시에도 뾰족한 다이아몬드 형태 보존 -->
             <div class="compass-needle-fixed">
               <svg viewBox="0 0 10 130" style="width: 10px; height: 130px;">
-                <defs>
-                  <linearGradient id="needle-grad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="50%" stop-color="#bf360c" />
-                    <stop offset="50%" stop-color="#3e2723" />
-                  </linearGradient>
-                </defs>
-                <polygon points="5,0 10,65 5,130 0,65" fill="url(#needle-grad)"/>
+                <polygon points="5,0 10,65 5,130 0,65" fill="#1a1a1a"/>
               </svg>
             </div>
             
@@ -420,7 +443,7 @@
       },
       {
         title: "10. 영원을 약속하며",
-        question: "사르디나의 가장 무거운 닻과, 그 닻을 지키는 파도.\n(ANCHOR AND W _ _ _)",
+        question: "사르디나의 가장 무거운 닻과,\n그 닻을 지키는 파도.\n(ANCHOR AND W _ _ _)",
         explanation: "가장 무거운 닻(로잔나)을 지키는 파도(마야)를 의미하는 영단어 'WAVE'를 황동 자물쇠 다이얼을 돌려 입력합니다.",
         html: `
           <div class="velvet-box-new">
@@ -430,7 +453,7 @@
                 <div class="brass-dial-group">
                   ${['W', 'A', 'V', 'E'].map(c => `
                     <div class="brass-dial-column">
-                      <span class="brass-dial-value">${c}</span>
+                      <div class="brass-dial-value">${c}</div>
                     </div>
                   `).join('')}
                 </div>
@@ -439,40 +462,26 @@
           </div>
         `
       },
-      {
+{
         title: "11. 사파이어와 다이아몬드",
         question: "어디, 솜씨를 한 번 볼까?\n(보석이 반짝이는 순서를 기억하세요)",
-        explanation: "세공 시작을 누르면 4개의 보석 중 일부가 차례로 반짝입니다. 반짝인 순서를 정확히 기억해 똑같은 순서대로 보석을 클릭해야 합니다. 실수를 방지하며 총 3번의 라운드를 연속으로 통과해야 합니다.",
+        explanation: "세공 시작을 누르면 4개의 보석 중 일부가 차례로 반짝입니다. 반짝인 순서를 기억해 같은 순서로 보석을 클릭합니다. 실수 없이 총 3번의 라운드를 연속으로 통과해야 합니다.",
         html: `
           <div class="gem-board" style="transform: scale(0.9); margin-top: -10px;">
-            <div class="gem-btn">
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
-                <polygon points="20,0 80,0 100,30 50,100 0,30" fill="#3a7ca5"/>
-                <polygon points="20,0 80,0 76.4,30 23.6,30" fill="#5c98c4"/>
-                <polygon points="25,30 75,30 50,100" fill="#81b4d8"/>
-              </svg>
-            </div>
-            <div class="gem-btn">
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
-                <polygon points="20,0 80,0 100,30 50,100 0,30" fill="#5b9e7b"/>
-                <polygon points="20,0 80,0 76.4,30 23.6,30" fill="#7eb595"/>
-                <polygon points="25,30 75,30 50,100" fill="#a1cca0"/>
-              </svg>
-            </div>
-            <div class="gem-btn">
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
-                <polygon points="20,0 80,0 100,30 50,100 0,30" fill="#7a7a7a"/>
-                <polygon points="20,0 80,0 76.4,30 23.6,30" fill="#9e9e9e"/>
-                <polygon points="25,30 75,30 50,100" fill="#c2c2c2"/>
-              </svg>
-            </div>
-            <div class="gem-btn">
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
-                <polygon points="20,0 80,0 100,30 50,100 0,30" fill="#76428a"/>
-                <polygon points="20,0 80,0 76.4,30 23.6,30" fill="#915ea8"/>
-                <polygon points="25,30 75,30 50,100" fill="#b17dc9"/>
-              </svg>
-            </div>
+            ${gemTones.map((tone) => `
+              <div class="gem-btn">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width:100%; height:100%;">
+                  <!-- 1. 내부 면들 (얇은 선으로 깔끔하게 분할) -->
+                  <polygon points="20,0 80,0 76.4,30 23.6,30" fill="${tone.top}" stroke="#1a1a1a" stroke-width="1.2"/>
+                  <polygon points="20,0 23.6,30 50,100 0,30" fill="${tone.left}" stroke="#1a1a1a" stroke-width="1.2"/>
+                  <polygon points="80,0 100,30 50,100 76.4,30" fill="${tone.right}" stroke="#1a1a1a" stroke-width="1.2"/>
+                  <polygon points="25,30 75,30 50,100" fill="${tone.center}" stroke="#1a1a1a" stroke-width="1.2"/>
+
+                  <!-- 2. 보석 전체의 바깥 외곽선만 오각형 실루엣으로 두껍게 덮어쓰기 -->
+                  <polygon points="20,0 80,0 100,30 50,100 0,30" fill="none" stroke="#1a1a1a" stroke-width="4"/>
+                </svg>
+              </div>
+            `).join('')}
           </div>
         `
       },
@@ -502,6 +511,14 @@
     const explanationEl = document.getElementById('explanation-text');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
+    const pdfSingleBtn = document.getElementById('download-pdf-btn');
+    const pdfAllBtn = document.getElementById('download-all-pdf-btn');
+    const pngBtn = document.getElementById('download-png-btn');
+
+    const PAPER_WIDTH_MM = 152;
+    const PAPER_HEIGHT_MM = 225;
+    const TARGET_WIDTH_PX = 1795;
+    const TARGET_HEIGHT_PX = 2657;
 
     function renderChapter(index) {
       const data = solutionData[index];
@@ -512,6 +529,14 @@
       
       prevBtn.disabled = index === 0;
       nextBtn.disabled = index === solutionData.length - 1;
+    }
+
+    function setButtonsDisabled(disabled) {
+      prevBtn.disabled = disabled || currentIndex === 0;
+      nextBtn.disabled = disabled || currentIndex === solutionData.length - 1;
+      pdfSingleBtn.disabled = disabled;
+      pdfAllBtn.disabled = disabled;
+      pngBtn.disabled = disabled;
     }
 
     prevBtn.addEventListener('click', () => {
@@ -528,34 +553,164 @@
       }
     });
 
-    // 고해상도 캡처(다운로드) 로직
-    document.getElementById('download-btn').addEventListener('click', () => {
-      const captureArea = document.getElementById('print-wrapper');
-      const dlBtn = document.getElementById('download-btn');
-      
-      const originalText = dlBtn.innerText;
-      dlBtn.innerText = "저장 중...";
-      dlBtn.disabled = true;
+    async function captureCurrentPageHighRes() {
+      if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+      }
 
-      html2canvas(captureArea, {
-        scale: 2, 
+      const captureArea = document.getElementById('print-wrapper');
+      const exportScale = TARGET_WIDTH_PX / captureArea.offsetWidth;
+
+      const capturedCanvas = await html2canvas(captureArea, {
+        scale: exportScale,
+        width: captureArea.offsetWidth,
+        height: captureArea.offsetHeight,
+        windowWidth: 1200,
         backgroundColor: "#ffffff",
-        useCORS: true, 
+        useCORS: true,
         allowTaint: true
-      }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `해설지_${solutionData[currentIndex].title.replace(/ /g, '_')}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        
-        dlBtn.innerText = originalText;
-        dlBtn.disabled = false;
-      }).catch(err => {
-        alert("이미지 저장 중 오류가 발생했습니다.");
-        console.error(err);
-        dlBtn.innerText = originalText;
-        dlBtn.disabled = false;
       });
+
+      const finalCanvas = document.createElement('canvas');
+      finalCanvas.width = TARGET_WIDTH_PX;
+      finalCanvas.height = TARGET_HEIGHT_PX;
+      const ctx = finalCanvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, TARGET_WIDTH_PX, TARGET_HEIGHT_PX);
+      ctx.drawImage(capturedCanvas, 0, 0, TARGET_WIDTH_PX, TARGET_HEIGHT_PX);
+
+      return finalCanvas;
+    }
+
+    function injectPngDpi(dataUrl, dpi) {
+      const ppm = Math.ceil(dpi / 0.0254);
+      const base64 = dataUrl.split(',')[1];
+      const binaryStr = atob(base64);
+      const len = binaryStr.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryStr.charCodeAt(i);
+      }
+
+      const physChunk = new Uint8Array(21);
+      const view = new DataView(physChunk.buffer);
+      view.setUint32(0, 9, false);
+      physChunk[4] = 0x70; physChunk[5] = 0x48; physChunk[6] = 0x59; physChunk[7] = 0x73;
+      view.setUint32(8, ppm, false);
+      view.setUint32(12, ppm, false);
+      physChunk[16] = 1;
+
+      let crc = 0xffffffff;
+      for (let i = 4; i < 17; i++) {
+        crc ^= physChunk[i];
+        for (let j = 0; j < 8; j++) {
+          crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+        }
+      }
+      view.setUint32(17, (crc ^ 0xffffffff) >>> 0, false);
+
+      const output = new Uint8Array(len + 21);
+      output.set(bytes.subarray(0, 33), 0);
+      output.set(physChunk, 33);
+      output.set(bytes.subarray(33), 54);
+
+      return new Blob([output], { type: 'image/png' });
+    }
+
+    pdfSingleBtn.addEventListener('click', async () => {
+      const originalText = pdfSingleBtn.innerText;
+      pdfSingleBtn.innerText = "PDF 생성 중...";
+      setButtonsDisabled(true);
+
+      try {
+        const finalCanvas = await captureCurrentPageHighRes();
+        const imgData = finalCanvas.toDataURL('image/png');
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: [PAPER_WIDTH_MM, PAPER_HEIGHT_MM],
+          compress: true
+        });
+
+        pdf.addImage(imgData, 'PNG', 0, 0, PAPER_WIDTH_MM, PAPER_HEIGHT_MM, undefined, 'FAST');
+        pdf.save(`해설지_${solutionData[currentIndex].title.replace(/ /g, '_')}_흑백.pdf`);
+      } catch (err) {
+        alert("PDF 저장 중 오류가 발생했습니다.");
+        console.error(err);
+      } finally {
+        pdfSingleBtn.innerText = originalText;
+        setButtonsDisabled(false);
+      }
+    });
+
+    pdfAllBtn.addEventListener('click', async () => {
+      const originalText = pdfAllBtn.innerText;
+      const savedIndex = currentIndex;
+      setButtonsDisabled(true);
+
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: [PAPER_WIDTH_MM, PAPER_HEIGHT_MM],
+          compress: true
+        });
+
+        for (let i = 0; i < solutionData.length; i++) {
+          pdfAllBtn.innerText = `합본 생성 중... (${i + 1}/${solutionData.length})`;
+          renderChapter(i);
+          await new Promise(resolve => setTimeout(resolve, 180));
+
+          const finalCanvas = await captureCurrentPageHighRes();
+          const imgData = finalCanvas.toDataURL('image/png');
+
+          if (i > 0) {
+            pdf.addPage([PAPER_WIDTH_MM, PAPER_HEIGHT_MM], 'portrait');
+          }
+          pdf.addImage(imgData, 'PNG', 0, 0, PAPER_WIDTH_MM, PAPER_HEIGHT_MM, undefined, 'FAST');
+        }
+
+        pdf.save(`닻과_파도의_항해일지_해설지_전체합본_흑백(신국판_300dpi).pdf`);
+      } catch (err) {
+        alert("전체 PDF 저장 중 오류가 발생했습니다.");
+        console.error(err);
+      } finally {
+        currentIndex = savedIndex;
+        renderChapter(currentIndex);
+        pdfAllBtn.innerText = originalText;
+        setButtonsDisabled(false);
+      }
+    });
+
+    pngBtn.addEventListener('click', async () => {
+      const originalText = pngBtn.innerText;
+      pngBtn.innerText = "PNG 저장 중...";
+      setButtonsDisabled(true);
+
+      try {
+        const finalCanvas = await captureCurrentPageHighRes();
+        const rawDataUrl = finalCanvas.toDataURL('image/png');
+        const pngBlobWith300Dpi = injectPngDpi(rawDataUrl, 300);
+        const blobUrl = URL.createObjectURL(pngBlobWith300Dpi);
+
+        const link = document.createElement('a');
+        link.download = `해설지_${solutionData[currentIndex].title.replace(/ /g, '_')}_흑백.png`;
+        link.href = blobUrl;
+        link.click();
+
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      } catch (err) {
+        alert("PNG 저장 중 오류가 발생했습니다.");
+        console.error(err);
+      } finally {
+        pngBtn.innerText = originalText;
+        setButtonsDisabled(false);
+      }
     });
 
     renderChapter(currentIndex);
